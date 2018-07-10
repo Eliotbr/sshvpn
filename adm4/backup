@@ -1,0 +1,105 @@
+#!/bin/bash
+clear
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '                  %35s%s%-20s\n' "     ATENÇÃO:            " ; tput sgr0
+tput setaf 3 ; tput bold ; echo ""
+echo "Ao criar um BACKUP você enviará suas informações para um servidor FTP."
+echo "Será solicitado um NOME DE USUÁRIO e uma senha FTP para efetuar login."
+echo "Caso ainda não possua uma conta crie agora mesmo em www.000webhost.com"
+echo "" ; tput sgr0
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '                %35s%s%-20s\n' ; tput sgr0
+echo ""
+echo "O que deseja fazer?"
+echo ""
+echo -e '\033[01;32m[1] -  CRIAR BACKUP\033[00;37m'
+echo -e '\033[01;32m[2] -  RESTAURAR BACKUP\033[00;37m'
+echo -e '\033[01;32m[0] -  VOLTAR AO MENU PRINCIPAL\033[00;37m'
+echo ""
+
+read -p "Opção: " -e -i 1 opcao
+
+if [[ "$opcao" = '1' ]]; then
+        if [ -f "/root/usuarios.db" ]
+        then
+                echo ""
+                echo "Criando backup..."
+                echo ""
+                tar cvf /root/backup.vps /root/usuarios.db /etc/shadow /etc/passwd /etc/group /etc/gshadow
+                echo ""
+				FTPSERVER="files.000webhost.com"
+                read -p "NOME DE USUÁRIO FTP: " username
+                read -p "SENHA FTP: " password
+                clear
+                echo "Conectando no servidor FTP..."
+ftp -n $FTPSERVER << FTP
+ user $username $password
+put backup.vps
+ls -l
+
+bye
+EOF
+FTP
+                echo "Arquivo backup.vps criado e enviado para o FTP com sucesso."
+				echo 
+				echo 'Tecle ENTER para voltar ao menu...'
+				read
+				/usr/local/bin/backup
+                echo ""
+        else
+                echo ""
+                echo "Criando backup..."
+                echo ""
+                tar cvf /root/backup.vps /etc/shadow /etc/passwd /etc/group /etc/gshadow
+                echo ""
+                echo "Arquivo /root/backup.vps criado e enviado para o FTP com sucesso."
+                echo ""
+				sleep 3
+				clear
+				/usr/local/bin/backup
+                fi
+				fi
+if [[ "$opcao" = '2' ]]; then
+                clear
+				FTPSERVER="files.000webhost.com"
+                read -p "NOME DE USUÁRIO FTP: " username
+                read -p "SENHA FTP: " password
+                clear
+                echo "Conectando no servidor FTP..."
+ftp -n $FTPSERVER << FTP
+ user $username $password
+get backup.vps
+ls -l
+
+bye
+EOF
+FTP
+        if [ -f "/root/backup.vps" ]
+        then
+                echo ""
+                echo "Restaurando backup..."
+                echo ""
+                sleep 1
+                cp /root/backup.vps /backup.vps
+                cd /
+                tar -xvf backup.vps
+                rm /backup.vps
+                echo ""
+                echo "Usuários e senhas importados com sucesso."
+				echo 
+				echo 'Tecle ENTER para voltar ao menu...'
+				read
+				clear
+				/usr/local/bin/backup
+                exit
+        else
+                echo ""
+                echo "O arquivo /root/backup.vps não foi encontrado!"
+                echo "Ceritifique-se que ele esteja localizado no diretório /root/ com o nome backup.vps"
+                echo ""
+                 fi
+                 fi
+if [[ "$opcao" = '0' ]]; then
+                 clear
+                /usr/local/bin/adm
+				exit
+                fi
+				

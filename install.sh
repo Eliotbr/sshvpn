@@ -7,22 +7,22 @@ else
 mkdir /root
 fi
 cd /root/
-if [[ -e /bin/instalacao1 ]]; then
+if [[ -e /usr/local/bin/instalacao1 ]]; then
 instalar
 exit
 sleep 4s
 else
- if [[ -e /bin/instalacao2 ]]; then
+ if [[ -e /usr/local/bin/instalacao2 ]]; then
 instalar
 exit
 sleep 4s
 else
-  if [[ -e /bin/instalacao3 ]]; then
+  if [[ -e /usr/local/bin/instalacao3 ]]; then
 instalar
 exit
 sleep 4s
 else
-   if [[ -e /bin/instalacao4 ]]; then
+   if [[ -e /usr/local/bin/instalacao4 ]]; then
 instalar
 exit
 sleep 4s
@@ -77,8 +77,8 @@ sleep 4s
 echo -e "\033[1;36mARQUIVOS EXTRAIDOS!...\033[0m"
 sleep 4s
 echo -e "\033[1;36mDANDO PERMISSAO AOS ARQUIVOS...\033[0m"
-mv -f /root/admmanager/* /bin/
-chmod  -R 777 /bin/*
+chmod  -R 777 /root/admmanager/*
+mv -f /root/admmanager/* /usr/local/bin/
 sleep 5s
 echo -e "\033[1;36mPRONTO!!!...\033[0m"
 sleep 4s

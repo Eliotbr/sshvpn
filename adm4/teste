@@ -1,0 +1,15 @@
+#!/bin/bash
+clear
+echo -e "\033[44;1;37m                     MEDIDOR DE LINK INTERNO                   \033[0m"
+echo
+tput setaf 3 ; tput bold ;  
+speedtest --share
+echo "" ; tput sgr0
+echo
+echo
+echo
+sleep 0.5
+echo "Tecle ENTER para voltar ao menu de administração..."
+read msg
+/usr/local/bin/adm
+

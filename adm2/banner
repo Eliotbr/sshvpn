@@ -1,0 +1,17 @@
+#!/bin/bash
+#cores
+vermelhoo="\033[1;31m"
+verdee="\033[1;32m"
+amareloo="\033[1;33m"
+#cores
+touch /etc/dropbear/ban
+echo -e "$amareloo
+ESCREVA O NOVO BANNER!"
+read -p ": " banner
+echo -e "$banner" >> /etc/dropbear/ban
+mv -f /etc/dropbear/ban /etc/dropbear/banner
+service dropbear restart
+echo -e "$amareloo
+AGORA A MENSAGEM DO BANNER E $vermelhoo
+$banner \033[1;33m"
+exit

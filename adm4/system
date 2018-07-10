@@ -1,0 +1,530 @@
+#!/bin/bash
+clear
+echo -e "\033[36;37m PAINEL DE GERENCIAMENTO DA VPS\033[0m"
+echo -e "\033[0;35m------------------------------------------------------------\033[0m"
+echo
+while [  "$op"  !=  "3" ]
+do
+echo -e '\033[1;36m[\033[1;31m1\033[1;36m] - INFORMAÇÕES GERAIS\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m2\033[1;36m] - USO DA REDE\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m3\033[1;36m] - ADICIONAR HOST\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m4\033[1;36m] - REMOVER HOST\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m5\033[1;36m] - MUDAR MENSAGEM PERSONALIZADA\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m6\033[1;36m] - FORÇAR ENCAMINHAMENTO UDP\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m7\033[1;36m] - ATIVAR SYSTEM SPEED\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m8\033[1;36m] - SOBRE O SVM PLUS\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m9\033[1;36m] - REINICIAR SISTEMA\033[00;37m'
+echo -e '\033[1;36m[\033[1;31md\033[1;36m] - DESINSTALAR SVM PLUS\033[00;37m'
+echo -e '\033[1;36m[\033[1;31m0\033[1;36m] - VOLTAR AO MENU PRINCIPAL\033[00;37m'
+echo -e "\033[0;35m------------------------------------------------------------\033[0m"
+read -p "RESPOSTA: " op
+case $op in
+1)clear
+echo -e "\033[41;1;37m                        INFORMAÇÕES GERAIS:                    \033[0m"
+echo -e "\033[44;1;37m                         VERSÃO DO KERNEL:                     \033[0m"
+uname -r
+echo
+echo -e "\033[44;1;37m                      VOCÊ ESTÁ LOGADO COMO:                   \033[0m"
+who 
+echo
+echo -e "\033[44;1;37m                    INFORMAÇÕES DA MEMÓRIA RAM:                \033[0m"
+cat /proc/meminfo | grep -v Active | grep -v Inactive | grep -v Unevictable | grep -v Mlocked | grep -v SwapTotal | grep -v SwapFree | grep -v Dirty | grep -v Writeback
+echo
+echo -e "\033[44;1;37m                    INFORMAÇÕES DO PROCESSADOR:                \033[0m"
+cat /proc/cpuinfo | grep -v flags | grep -v processor | grep -v family | grep -v power | grep -v initial | grep -v apicid | grep -v id | grep -v fpu | grep -v wp | grep -v cache | grep -v stepping | grep -v size | grep -v bogomips | grep -v 62
+echo
+echo -e "\033[44;1;37m                      USO DE MEMÓRIA ATUAL:                    \033[0m"
+free -ht s1 | awk -F' ' '{print $1, "\t" $2, "\t" $3, "\t" $4, "\t" $5}'
+echo
+echo -e "\033[41;1;37m                                                               \033[0m"
+echo
+read
+/usr/local/bin/system
+exit
+;;
+2)clear
+nload
+/usr/local/bin/system
+exit
+;;
+3)clear
+payload="/etc/squid3/payload.txt"
+echo -e "\033[44;1;37m                     ADICIONAR HOST AO SQUID3                  \033[0m"
+echo
+if [ ! -f "$payload" ]
+then
+       clear
+	   echo
+       tput setaf 7 ; tput setab 1 ; tput bold ; echo "Arquivo não encontrado..."  ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+       echo
+       tput setaf 7 ; tput setab 4 ; tput bold ; echo "DOMINIOS DENTRO DO ARQUIVO:"  ; tput sgr0
+       echo
+tput setaf 3 ; tput bold ; echo "" ; cat $payload ; echo "" ; tput sgr0
+       echo
+	   echo
+read -p "Digite o domínio que deseja adicionar a lista: " host
+if [[ -z $host ]]
+then
+       clear
+       tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "Você digitou um domínio vazio ou inexistente!" ; echo "" ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+if [[ `grep -c "^$host" $payload` -eq 1 ]]
+then
+       clear
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "O domínio $host já existe no arquivo..." ; echo "" ; tput sgr0
+        sleep 3
+	   /usr/local/bin/system
+	   exit 1
+else
+if [[ $host != \.* ]]
+then
+       clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "Você deve adicionar um sub-domínio iniciando-o com um ponto!" ; echo "Por exemplo: .vpsmanager.tk" ; echo "Não é necessário adicionar subdomínios para domínios que já estão no arquivo" ; echo "Ou seja, não é necessário adicionar recargawap.claro.com.br" ; echo "se o domínio .claro.com.br já estiver no arquivo." ; echo ""; tput sgr0
+       sleep 10
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+       echo "$host" >> $payload && grep -v "^$" $payload >> /tmp/a && mv /tmp/a $payload
+       clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "O domínio $host foi adicionado com sucesso !" ; tput sgr0
+	   echo
+       tput setaf 3 ; tput bold ; echo "" ; cat $payload ; echo "" ; tput sgr0
+if [ ! -f "/etc/init.d/squid3" ]
+then
+       service squid3 reload
+else
+       /etc/init.d/squid3 reload
+	   fi
+	   echo
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "O Proxy Squid3 foi recarregado com sucesso!" ; echo "" ; tput sgr0
+	   sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+			    fi
+		        fi
+	            fi
+                fi
+;;
+4)clear
+payload="/etc/squid3/payload.txt"
+echo -e "\033[44;1;37m                      DELETAR HOST NO SQUID3                   \033[0m"
+echo
+if [ ! -f "$payload" ]
+then
+       clear
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Arquivo não encontrado..."  ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+       echo
+       tput setaf 7 ; tput setab 4 ; tput bold ; echo "DOMINIOS DENTRO DO ARQUIVO:"  ; tput sgr0
+       echo
+tput setaf 3 ; tput bold ; echo "" ; cat $payload ; echo "" ; tput sgr0
+       echo
+	   echo
+	   read -p "Digite o domínio que deseja remover da lista: " host
+if [[ -z $host ]]
+then
+	   clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "Você digitou um domínio vazio ou inexistente!" ; echo "" ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+if [[ `grep -c "^$host" $payload` -ne 1 ]]
+then
+	   clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "O domínio $host não foi encontrado no arquivo $payload" ; echo "" ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+			grep -v "^$host" $payload >> /tmp/a && mv /tmp/a $payload
+			clear
+			clear
+			tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "O domínio $host foi removido com sucesso!" ; tput sgr0
+			echo
+			tput setaf 3 ; tput bold ; echo "" ; cat $payload ; echo "" ; tput sgr0
+if [ ! -f "/etc/init.d/squid3" ]
+then
+				service squid3 reload
+else
+				/etc/init.d/squid3 reload
+			fi
+			tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "O Proxy Squid3 foi recarregado com sucesso!" ; echo "" ; tput sgr0
+			sleep 3
+			clear
+	        /usr/local/bin/system
+	        exit 1
+		    fi
+	        fi
+            fi
+
+;;
+5)
+clear
+bannerssh="/etc/bannerssh"
+echo -e "\033[44;1;37m                            BANNER SSH                         \033[0m"
+echo
+if [ ! -f "$bannerssh" ]
+then
+       clear
+       tput setaf 7 ; tput setab 1 ; tput bold ; echo "Arquivo não encontrado..."  ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+       echo
+       tput setaf 7 ; tput setab 4 ; tput bold ; echo "MENSAGEM ATUAL:"  ; tput sgr0
+       echo
+tput setaf 3 ; tput bold ; echo "" ; cat $bannerssh ; echo "" ; tput sgr0
+       echo
+	   echo
+read -p "Digite a nova mensagem: " host
+if [[ -z $host ]]
+then
+       clear
+       tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "Você digitou uma mensagem vazia!" ; echo "" ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+else
+if [[ `grep -c "^$host" $bannerssh` -eq 1 ]]
+then
+       clear
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "" ; echo "Está é a mensagem atual, digite uma nova" ; echo "" ; tput sgr0
+        sleep 3
+		clear
+	   /usr/local/bin/system
+	   exit 1
+else
+       echo > $bannerssh
+       echo "$host" >> $bannerssh && grep -v "^$" $bannerssh >> /tmp/a && mv /tmp/a $bannerssh
+       clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "$bannerssh atualizado, a mensagem adicionada com sucesso:" ; tput sgr0
+	   echo
+       tput setaf 3 ; tput bold ; echo "" ; cat $bannerssh ; echo "" ; tput sgr0
+	   sleep 3
+if [ ! -f "/etc/init.d/squid3" ]
+then
+       service squid3 reload
+else
+       /etc/init.d/squid3 reload
+	   fi	
+       clear
+	   tput setaf 7 ; tput setab 4 ; tput bold ; echo "" ; echo "O Proxy Squid3 foi recarregado e a nova mensagem já esta ativa!" ; echo "" ; tput sgr0
+       sleep 3
+	   clear
+	   /usr/local/bin/system
+	   exit 1
+			    fi
+		        fi
+                fi
+;;			
+6)clear
+echo -e "\033[44;1;37m                       ENCAMINHAMENTO UDP                      \033[0m"
+    if [ -f "/usr/local/bin/badvpn-udpgw" ]
+    then
+	echo
+    tput setaf 7 ; tput setab 1 ; tput bold ; echo "As configurações de ENCAMINHAMENTO UDP já estão ativas!" ; tput sgr0
+	echo ""
+	echo "Deseja remover os protocolos de ENCAMINHAMENTO UDP? ele"
+	echo "é util emaplicações como Whatsapp , Skype , Facebook e "
+	echo "em jogos online."
+	echo
+	read -p "Remover configurações de ENCAMINHAMENTO UDP? [S/N]: " -e -i n resposta0
+	if [[ "$resposta0" = 's' ]]; then
+    rm -rf /usr/local/bin/badvpn-udpgw
+    echo ""
+	clear
+    tput setaf 7 ; tput setab 1 ; tput bold ; echo "";  echo "As configurações de ENCAMINHAMENTO UDP foram removidas com sucesso." ; tput sgr0
+	sleep 3
+	echo ""
+	/usr/local/bin/system
+	exit
+else 
+	echo ""
+	/usr/local/bin/system
+	exit
+	fi
+else
+    echo
+	echo "Deseja instalar no seu VPS o BADUDP? Ele serve para"
+	echo "ativar o ENCAMINHAMENTO UDP, usado por aplicação como"
+	echo "Whatsapp, Skype e Facebook  para fazer chamadas e por"
+	echo "jogos online."
+	echo
+	read -p "Continuar com a instalação? [S/N]: " -e -i n resposta
+	if [[ "$resposta" = 's' ]]; then
+	echo
+	apt-get install screen wget gcc build-essential g++ make -y
+	wget http://www.cmake.org/files/v2.8/cmake-2.8.12.tar.gz
+	tar xvzf cmake*.tar.gz
+	cd cmake*
+	./bootstrap --prefix=/usr
+	make 
+	make install
+	cd ..
+	rm -r cmake*
+	mkdir badvpn-build
+	cd badvpn-build
+	wget www.vpsmanager.tk/badvpn-master.zip
+	unzip badvpn-master.zip
+	cd bad*
+	cmake -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1
+	make install
+	cd ..
+	rm -r bad*
+	cd ..
+	rm -r badvpn-build
+	clear
+	sleep 3
+	clear
+    tput setaf 7 ; tput setab 4 ; tput bold ; echo "";  echo "As configurações de ENCAMINHAMENTO UDP foram ativadas com sucesso." ; tput sgr0
+	sleep 3
+	echo
+	/usr/local/bin/system
+exit
+else
+    clear
+    tput setaf 7 ; tput setab 1 ; tput bold ;  echo "A instalação foi cancelada pelo usuário!" ; tput sgr0
+	sleep 3
+	clear
+	/usr/local/bin/system
+exit
+	echo
+fi
+fi
+/usr/local/bin/system
+exit
+;;
+7)clear
+echo -e "\033[44;1;37m                          SYSTEM SPEED                         \033[0m"
+if [[ `grep -c "CJR" /etc/sysctl.conf` -eq 1 ]]
+then
+	echo
+tput setaf 7 ; tput setab 4 ; tput bold ; echo "As configurações já foram adicionadas no sistema!" ; tput sgr0
+	echo ""
+	read -p "Deseja remover as configurações do SYSTEM SPEED? [S/N]: " -e -i n resposta0
+	if [[ "$resposta0" = 's' ]]; then
+		grep -v "^CJR
+net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 16384 16777216
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_rfc1337 = 1
+net.ipv4.ip_no_pmtu_disc = 0
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_ecn = 0
+net.ipv4.route.flush = 1" /etc/sysctl.conf > /tmp/syscl && mv /tmp/syscl /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf 1&> /dev/null 2&> /dev/null
+echo > /etc/modprobe.d/bad_list
+rm -rf /etc/modprobe.d/bad_list
+	echo ""
+tput setaf 7 ; tput setab 1 ; tput bold ; echo "";  echo "As configurações foram removidas com sucesso." ; tput sgr0
+	sleep 3
+	clear
+	echo ""
+	/usr/local/bin/system
+	exit
+else 
+	echo ""
+	/usr/local/bin/system
+	exit
+	fi
+else
+    echo
+	echo "Este script irá alterar algumas configurações de rede do"
+	echo "sistema para reduzir a latência e melhorar a velocidade."
+	echo ""
+	read -p "Continuar com a instalação? [S/N]: " -e -i n resposta
+	if [[ "$resposta" = 's' ]]; then
+	echo ""
+tput setaf 7 ; tput setab 4 ; tput bold ; echo "";  echo "Adicionando configurações..." ; tput sgr0
+	echo
+	sleep 2
+	echo 'net.ipv4.tcp_window_scaling = 1'
+	sleep 0.5s
+	echo 'net.core.rmem_max = 16777216'
+	sleep 5
+	echo 'net.core.wmem_max = 16777216'
+	sleep 2
+	echo 'net.ipv4.tcp_rmem = 4096 87380 16777216'
+	sleep 0.5s
+	echo 'net.ipv4.tcp_wmem = 4096 16384 16777216'
+	sleep 1
+	echo 'net.ipv4.tcp_low_latency = 1'
+	sleep 0.5s
+	echo 'net.ipv4.tcp_slow_start_after_idle = 0'
+	sleep 2
+	echo 'net.ipv4.tcp_rfc1337 = 1'
+	sleep 0.5s
+	echo 'net.ipv4.ip_no_pmtu_disc = 0'
+	sleep 1
+	echo 'net.ipv4.tcp_sack = 1'
+	sleep 3
+	echo 'net.ipv4.tcp_fack = 1'
+	sleep 1
+	echo 'net.ipv4.tcp_window_scaling = 1'
+	sleep 2
+	echo 'net.ipv4.tcp_timestamps = 1'
+	sleep 0.5s
+	echo 'net.ipv4.tcp_ecn = 0'
+	sleep 1
+	echo 'net.ipv4.route.flush = 1'
+	echo
+	echo " " >> /etc/sysctl.conf
+	echo "CJR" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 16384 16777216
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_rfc1337 = 1
+net.ipv4.ip_no_pmtu_disc = 0
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_ecn = 0
+net.ipv4.route.flush = 1" >> /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf 1&> /dev/null 2&> /dev/null
+touch /etc/modprobe.d/bad_list
+echo > /etc/modprobe.d/bad_list
+echo "alias net-pf-10 off" >> /etc/modprobe.d/bad_list
+    echo ""
+	echo ""
+tput setaf 7 ; tput setab 4 ; tput bold ; echo "";  echo "As configurações foram adicionadas com sucesso." ; tput sgr0
+	sleep 3
+	echo ""
+	/usr/local/bin/system
+else
+	echo ""
+	clear
+tput setaf 7 ; tput setab 1 ; tput bold ; echo "";  echo "A instalação foi cancelada pelo usuário!" ; tput sgr0
+	sleep 3
+	clear
+	/usr/local/bin/system
+	echo ""
+fi
+fi
+/usr/local/bin/system
+exit
+;;
+8)clear
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '%48s%s%-20s\n' "SOBRE O SVM PLUS" ; tput sgr0
+echo
+echo "O Script VPS Manager Plus foi desenvolvido por Célio Junior."
+echo "A intenção dele é facilitar a vida de muitos administradores"
+echo "de rede,o SVM pode ser operado por qualquer usuário,mesmo que"
+echo "ele não tenha conhecimento algum sobre o assunto."
+echo
+tput setaf 7 ; tput setab 4 ; tput bold ; echo "CONTATOS:" ; tput sgr0
+echo
+echo "Whatsapp: +5522997050408"
+echo "Telegram: @DroidExpert"
+echo "E-mail: celiomagalhaesjr@gmail.com"
+echo
+read
+clear
+;;
+9)clear
+/sbin/shutdown -r now
+;;
+d)clear
+clear
+tput setaf 7 ; tput setab 4 ; tput bold ; printf ' %40s%s%-20s\n' "   ATENÇÃO:    " ; tput sgr0
+echo
+echo "Se prosseguir com a desinstalação o conteudo do SVM PLUS"
+echo "será apagado definitivamente, e a ação, não poderá ser"
+echo "cancelada."
+echo
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '   %36s%s%-20s\n' ; tput sgr0
+echo
+echo
+read -p "Deseja prosseguir com a desinstalação? [S/N]: " -e -i n resposta
+if [[ "$resposta" = 's' ]]; then
+
+#
+# removendo pacotes
+       
+	   apt-get remove squid3 -y
+	   apt-get remove screen -y
+	   apt-get remove nload -y
+	   apt-get remove figlet -y
+	   apt-get remove dos2unix -y
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Screen removido com sucesso !" ; tput sgr0 
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Dos2unix removido com sucesso !" ; tput sgr0
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Screen removido com sucesso !" ; tput sgr0
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Figlet removido com sucesso !" ; tput sgr0
+	   tput setaf 7 ; tput setab 1 ; tput bold ; echo "Squid3 removido com sucesso !" ; tput sgr0
+	   #	   
+       rm -rf /usr/local/bin/backup ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Backup removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/h ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Home removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/att ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Atualizador removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/relatorio ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Relatorio removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/limiter ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Limitador removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/teste ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Teste de rede removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/relatorio ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Failban removido com sucesso !" ; tput sgr0
+	   rm -rf /etc/squid3/payload.txt ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Payload removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/local/bin/squid3/block.txt ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Block removido com sucesso !" ; tput sgr0
+	   rm -rf /root/.bashrc ; tput setaf 7 ; tput setab 1 ; tput bold ; echo ".bashrc removido com sucesso !" ; tput sgr0
+	   rm -rf /usr/share/squid-langpack/pt-br/ERR_INVALID_URL ; tput setaf 7 ; tput setab 1 ; tput bold ; echo "Pagina de erro personalizada removida com sucesso !" ; tput sgr0
+	   rm -rf /usr/share/squid-langpack/pt-br/ERR_ACCESS_DENIED
+	   
+	   
+	   
+       sleep 3
+#
+# fim da remoção dos pacotes
+clear
+tput setaf 7 ; tput setab 1 ; tput bold ; echo "Desinstalação efetuada com sucesso !!!" ; tput sgr0
+sleep 2
+cd /root
+rm -rf /usr/local/bin/unstall
+         exit
+        else
+        echo
+        clear
+		/usr/local/bin/system
+		exit
+fi
+;;
+0)clear
+/usr/local/bin/h
+exit
+;;
+*)
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '%48s%s%-20s\n' "OPÇÃO INVÁLIDA..." ; tput sgr0
+sleep 1
+exit
+;;
+
+esac
+read
+done

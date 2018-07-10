@@ -1,0 +1,63 @@
+#!/bin/bash
+
+reinstalar () {
+apt-get update -y && apt-get upgrade -y && wget https://www.dropbox.com/s/p3n7y9r2srhvjic/inst && bash inst
+}
+
+remove () {
+echo -e ""
+echo -e ""
+rm -rf /usr/local/bin/adm
+rm -rf /usr/local/bin/adm2
+rm -rf /usr/local/bin/adm3
+rm -rf /usr/local/bin/adm4
+rm -rf /usr/local/bin/001
+rm -rf /usr/local/bin/002
+rm -rf /usr/local/bin/badvpn-udpgw
+rm -rf /usr/local/bin/EXTRAIRHOST
+rm -rf /usr/local/bin/speedtest.py
+rm -rf /usr/local/bin/linkextractor
+rm -rf /usr/local/bin/manager
+rm -rf /usr/local/bin/vpnbad
+rm -rf /usr/local/bin/instalacao1
+rm -rf /usr/local/bin/instalacao2
+rm -rf /usr/local/bin/instalacao3
+rm -rf /usr/local/bin/instalacao4
+rm -rf /usr/local/bin/notas
+rm -rf /usr/local/bin/add-host
+rm -rf /usr/local/bin/del-host
+rm -rf /usr/local/bin/expcleaner
+rm -rf /usr/local/bin/users.db
+rm -rf /usr/local/bin/limit
+rm -rf /usr/local/bin/SQUID3IS
+rm -rf /usr/local/bin/Usercreate
+rm -rf /usr/local/bin/atualizarusersdb
+rm -rf /usr/local/bin/banner
+rm -rf /usr/local/bin/UserBack
+rm -rf /usr/local/bin/UserRedefine
+ssh="/etc/ssh/sshbak"
+if [ ! -f "$ssh" ]
+then
+  echo ""
+else
+mv -f /etc/ssh/sshbak /etc/ssh/sshd_config
+fi
+apt-get remove squid3 -y 1>/dev/null 2>/dev/null apt-get remove squid -y 1>/dev/null 2>/dev/null apt-get autoremove -y 1>/dev/null 2>/dev/null
+}
+
+echo -e "\033[1;31mDESINSTALAR OU INSTALAR OUTRO GERENCIADOR?"
+echo -e "[1] DESINSTALAR
+[2] INSTALAR OUTRO GERENCIADOR\033[0m"
+read -p ": " resposta
+case $resposta in
+ 2)
+remove
+reinstalar
+exit
+;;
+ *)
+remove
+exit
+;;
+esac
+exit

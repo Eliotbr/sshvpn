@@ -1,0 +1,77 @@
+#!/bin/bash
+echo -e "
+\033[1;36mTUDO PRONTO SEU SISTEMA ESTA INSTALADO E CONFIGURADO
+PARA ADMINISTRAR O COMANDO
+\033[1;31madm\033[1;36m E \033[1;31mmanager\033[0m"
+sleep 1s
+echo -e "\033[1;32mDETALHES\033[1;36m
+
+gerenciador adm manager 
+com SQUID e DROPBEAR
+
+sempre mantenha atualizado"
+sleep 1s
+####
+if [[ -e /usr/local/bin/instalacao1 ]]; then
+echo -e ""
+echo -e "\033[1;31mS E U   S I S T E M A   F O I"
+echo -e ""
+echo -e "\033[1;32mA T U A L I Z A D O\033[0m"
+echo -e ""
+echo -e "UM BOM USO"
+sleep 4s
+exit
+else
+ if [[ -e /usr/local/bin/instalacao2 ]]; then
+echo -e ""
+echo -e "\033[1;31mS E U   S I S T E M A   F O I"
+echo -e ""
+echo -e "\033[1;32mA T U A L I Z A D O\033[0m"
+echo -e ""
+echo -e "UM BOM USO"
+sleep 4s
+exit
+else
+  if [[ -e /usr/local/bin/instalacao3 ]]; then
+echo -e ""
+echo -e "\033[1;31mS E U   S I S T E M A   F O I"
+echo -e ""
+echo -e "\033[1;32mA T U A L I Z A D O\033[0m"
+echo -e ""
+echo -e "UM BOM USO"
+sleep 4s
+exit
+else
+   if [[ -e /usr/local/bin/instalacao4 ]]; then
+echo -e ""
+echo -e "\033[1;31mS E U   S I S T E M A   F O I"
+echo -e ""
+echo -e "\033[1;32mA T U A L I Z A D O\033[0m"
+echo -e ""
+echo -e "UM BOM USO"
+sleep 4s
+exit
+   fi
+  fi
+ fi
+fi
+######
+touch /usr/local/bin/instalacao2
+echo -e "
+\033[1;31m(IMPORTANTE CASO SEJA A PRIMEIRA INSTALACAO NESCESSARIO REBOOT NA SUA VPS!)
+\033[40;1;37m\033[0m"
+sleep 1s
+echo -e "\033[1;31mDESEJA FAZER ISTO AGORA"
+echo -e "[s/n]\033[0m"
+read -p ": " simnao
+if [ "$simnao" = "s" ]
+then
+reboot
+reboot
+reboot
+reboot
+else
+echo -e "UM BOM USO"
+exit
+fi
+exit

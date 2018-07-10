@@ -1,0 +1,60 @@
+#!/bin/bash
+mkdir /etc/VpsPackdir 1>/dev/null 2>/dev/null
+mkdir /etc/VpsPackdir/senha 1>/dev/null 2>/dev/null
+if [ $(id -u) -eq 0 ]
+then
+	echo -e "\033[1;32mNome do novo usuario:\033[0;37m"; read -p " " name
+if [ "$name" = "" ]; then
+echo -e "\033[1;31mNAO FOI DIGITADO UM NOME\033[0m"
+sleep 4s
+adm
+exit
+fi
+	echo -e "\033[1;32mSenha para o usuario $name:\033[0;37m"; read -p " " pass
+###data###
+echo -e "\033[1;31mDefinir data e Limite Para o Usuario? 
+[s/n]\033[0m"
+read -p ": " simounao
+if [ "$simounao" = "s" ]
+then
+	echo -e "\033[1;32mQuantos dias usuario $name deve durar:\033[0;37m"; read -p " " daysrnf
+	echo -e "\033[1;32mQuantas conexoes?:\033[0;37m"; read -p " " limit
+echo -e "\033[0m"
+    else
+daysrnf="90"
+fi
+	if cat /etc/passwd |grep $name: |grep -vi [a-z]$name |grep -v [0-9]$name > /dev/null
+	then
+		echo -e "\033[1;31mUsuario $name ja existe\033[0m"
+	else
+		valid=$(date '+%C%y-%m-%d' -d " +$daysrnf days")
+		datexp=$(date "+%d/%m/%Y" -d "+ $daysrnf days")
+		useradd -M -s /bin/false $name -e $valid
+		(echo $pass; echo $pass)|passwd $name 2>/dev/null
+	    echo "$pass" > /etc/VpsPackdir/senha/$name
+	fi
+else
+	if echo $(id) |grep sudo > /dev/null
+	then
+	echo "Seu usuario esta no grupo sudo"
+	echo -e "Para virar root execute \033[1;31msudo su\033[0m"
+	echo -e "Ou execute o Usercreate como sudo. \033[1;31msudo Usercreate\033[0m"
+	else
+	echo -e "Vc nao esta como usuario root, nem com seus direitos (sudo)\nPara virar root execute \033[1;31msu\033[0m e digite sua senha root"
+	fi
+fi				
+if [ "$simounao" = "s" ]
+then
+limit $name $limit
+		echo -e "\033[1;36mSenha: \033[1;37m$pass"
+		echo -e "\033[1;36mValidade:\033[1;37m $datexp"
+else
+     echo -e "\033[1;36mUsuario: \033[1;37m$name"
+		echo -e "\033[1;36mSenha: \033[1;37m$pass"
+fi
+echo -e "\033[1;36mCRIADO COM SUCESSO \033[0m"
+sleep 4s
+exit
+
+
+
